@@ -2,5 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/ffmpeg-0.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/gson-2.8.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/guava-20.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/modelmapper-0.7.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/slf4j-api-1.7.21.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/download"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
