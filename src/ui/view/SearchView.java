@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -89,9 +90,30 @@ public class SearchView extends JPanel implements UI_Constants{
 			public void actionPerformed(ActionEvent e) {
 				
 				viewListener.update(CREATE_SONG, linkField.getText());
+				linkField.setText("");
 			}
 			
 		});
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		column=4;
+		c.gridx = column;
+		c.gridy = row;
+		JCheckBox audioOnlyButton= new JCheckBox(" Audio Only ");
+		audioOnlyButton.setSelected(true);
+		add(audioOnlyButton,c);
+		
+		audioOnlyButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				viewListener.update(SET_VIDEO_STATE, String.valueOf(!audioOnlyButton.isSelected()));
+			}
+			
+		});
+		
+		
 	
 		return this;
 	}

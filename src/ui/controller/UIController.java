@@ -13,9 +13,12 @@ import ui.controller.SearchEvent.Type;
 
 public class UIController extends ObjectQueue implements ViewListener, UI_Constants {
 
+	
+	boolean videoState=false;
 	public UIController(){
 		startConsuming();
 	}
+	//*******************************************************************************************
 	
 	@Override
 	public void update(String eventName, String data) {
@@ -26,53 +29,75 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 		if(eventName.equals(SEARCH_MEDIA)){
 			queueObject(new SearchEvent(Type.search,data));
 		}
+		
+		if (eventName.equals(SET_VIDEO_STATE)){
+			videoState=Boolean.valueOf(data);
+		}
 	}
-
+	//*******************************************************************************************
+	
 	@Override
 	protected void processObject(Object object) {
 		if(object==null) return;
 		if(object instanceof SearchEvent ){
 			processEvent((SearchEvent) object);
 		}
-		
 	}
-
+	//*******************************************************************************************
+	
 	private void processEvent(SearchEvent event) {
 		switch(event.getType()){
 			
 		case create:
-			String [] inputArguments=new String [2];
-			inputArguments[0]=event.getEventString();
-			inputArguments[1]=TEMP_DOWNLOAD_PATH;
-			Audio audio=new Audio();
-			audio.main(inputArguments);
-			List<String> files=audio.getFileNames();
-			System.out.println("Files size is "+files.size());
+			List<String> files=downloadSong(event);
 			String audioFile = null;
+			AudioManager audioMAnager=new AudioManager();
+			//select audio file to convert
+			//todo allow video to convert if needed
 			if(files.size()==1) audioFile=files.get(0);
 			else 
 				for(String fileName:files){	
-				System.out.println("file name "+fileName );
 				if(fileName.contains(".audio")) audioFile=fileName;
 			}
-			AudioManager audioMAnager=new AudioManager();
+
+			//audio manager converts from mp4 to mp3
 			audioMAnager.createAudio(audioFile);
-			for(String fileName:files){
-				Path filePath=Paths.get(fileName);
-				try {
-					Files.delete(filePath);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			
+			//delete mp4 from directory
+			deleteFromDirectory(audioFile);
 			break;
 			
 		case search:
 			//use utube api to find songs
 			break;
+		}		
+	}
+	
+	//***************************************************************************************************
+	
+	private void deleteFromDirectory(String file) {
+		Path filePath=Paths.get(file);
+		try {
+			Files.delete(filePath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
-
+	//*******************************************************************************************
+	
+	private List<String> downloadSong(SearchEvent event) {
+		String [] inputArguments=new String [3];
+		inputArguments[0]=event.getEventString();
+		inputArguments[1]=TEMP_DOWNLOAD_PATH;
+		inputArguments[2]=String.valueOf(videoState);
+		Audio audio=new Audio();
+		audio.main(inputArguments);
+		List<String> files=audio.getFileNames();
+		System.out.println("Files size is "+files.size());
+		return files;
+	}
+//*******************************************************************************************************
+	
 }

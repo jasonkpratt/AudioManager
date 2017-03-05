@@ -27,8 +27,11 @@ public class AudioManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		String outputFile=inputFile.replaceAll(".mp4", ".mp3");
+		String outputFile;
+		
+		if(inputFile.endsWith("audio.mp4" ))		outputFile=inputFile.replaceAll("audio.mp4", ".mp3");
+		else outputFile=inputFile.replaceAll(".mp4", ".mp3");
+		
 		FFmpegBuilder builder = new FFmpegBuilder()
 
 		  .setInput(inputFile)     // Filename, or a FFmpegProbeResult
@@ -58,6 +61,8 @@ public class AudioManager {
 		executor.createJob(builder).run();
 		System.out.println("Completed");
 	}
+	//*******************************************************************************************
+	
 	public static void main(String [] args){
 		AudioManager mananger=new AudioManager();
 		mananger.createAudio("C:\\Users\\jason\\Music\\temp\\Green Grass and High Tides.audio.mp4");
