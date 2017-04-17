@@ -4,18 +4,44 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.github.axet.vget.info.VideoFileInfo;
+
 import executable.Audio;
+import executable.DownloadListener;
 import ffmpeg.AudioManager;
 import ui.UI_Constants;
 import ui.controller.SearchEvent.Type;
+import ui.model.YouTubeParser;
+import ui.view.CleanUpView;
+import ui.view.ConverterView;
+import ui.view.ManualView;
+import ui.view.SearchView;
+import ui.view.TreeView;
 
-public class UIController extends ObjectQueue implements ViewListener, UI_Constants {
+public class UIController extends ObjectQueue implements ViewListener, UI_Constants, DownloadListener {
 
-	
+	AudioManager audioMAnager=new AudioManager();
+	YouTubeParser uTubeParser=new YouTubeParser();
+	SearchView searchView;
+	TreeView treeView;
+	CleanUpView cleanUpView;
+	ConverterView converterView;
+	ManualView manualView;
 	boolean videoState=false;
-	public UIController(){
+	Audio downloadManager=new Audio();
+	private boolean playMusic=false;
+	private List<String> songsCurrentlyDownloaded=new ArrayList<>();
+	
+	public UIController(SearchView searchView, TreeView treeView, CleanUpView cleanUpView, ConverterView converterView, ManualView manualView){
+		this.manualView=manualView;
+		this.searchView=searchView;
+		this.treeView=treeView;
+		this.cleanUpView=cleanUpView;
+		this.converterView=converterView;
+		downloadManager.setDownloadListener(this);
 		startConsuming();
 	}
 	//*******************************************************************************************
@@ -33,6 +59,10 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 		if (eventName.equals(SET_VIDEO_STATE)){
 			videoState=Boolean.valueOf(data);
 		}
+		
+		if(eventName.equals(LISTEN_SONG))
+			queueObject(new SearchEvent(Type.listen,data));
+		
 	}
 	//*******************************************************************************************
 	
@@ -49,30 +79,64 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 		switch(event.getType()){
 			
 		case create:
-			List<String> files=downloadSong(event);
-			String audioFile = null;
-			AudioManager audioMAnager=new AudioManager();
-			//select audio file to convert
-			//todo allow video to convert if needed
-			if(files.size()==1) audioFile=files.get(0);
-			else 
-				for(String fileName:files){	
-				if(fileName.contains(".audio")) audioFile=fileName;
-			}
+			if(songsCurrentlyDownloaded.contains(event.getEventString()))
+				break;
+ 			songsCurrentlyDownloaded.add(event.getEventString());
+			 Thread thread = new Thread(new Runnable() {
+         public void run() {
 
-			//audio manager converts from mp4 to mp3
-			audioMAnager.createAudio(audioFile);
-			
-			//delete mp4 from directory
-			deleteFromDirectory(audioFile);
+    			List<String> files=downloadSong(event);
+    			String audioFile = null;
+    			
+    			//select audio file to convert
+    			//todo allow video to convert if needed
+    			if(files.size()==1) audioFile=files.get(0);
+    			else 
+    				for(String fileName:files){	
+    					if(fileName.contains(".audio")) audioFile=fileName;
+    			}
+
+    			//audio manager converts from mp4 to mp3
+    			audioMAnager.createAudio(audioFile);
+    			
+    			//delete mp4 from directory
+    			deleteFromDirectory(audioFile);
+    			songsCurrentlyDownloaded.remove(event.getEventString());
+            }
+         });
+			thread.start();
 			break;
 			
 		case search:
-			//use utube api to find songs
+			createSearchUI(event.getEventString());
 			break;
+			
+		case listen:
+			listenToMusic(event);
 		}		
 	}
+
+	//***************************************************************************************************
 	
+	private void listenToMusic(SearchEvent event) {
+		playMusic=true;
+		downloadSong(event);
+		
+	}
+	
+//***************************************************************************************************
+		
+	private void createSearchUI(String searchString) {
+		
+		try {
+			searchView.updateImageScrollBar(uTubeParser.startParser(searchString));
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	//***************************************************************************************************
 	
 	private void deleteFromDirectory(String file) {
@@ -92,12 +156,26 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 		inputArguments[0]=event.getEventString();
 		inputArguments[1]=TEMP_DOWNLOAD_PATH;
 		inputArguments[2]=String.valueOf(videoState);
-		Audio audio=new Audio();
-		audio.main(inputArguments);
-		List<String> files=audio.getFileNames();
+		downloadManager.main(inputArguments);
+		List<String> files=downloadManager.getFileNames();
 		System.out.println("Files size is "+files.size());
 		return files;
 	}
 //*******************************************************************************************************
+	
+	@Override
+	public void updateDownloadListener(VideoFileInfo videoFile ) {
+		//todo update download progress bar
+		
+
+	}
+	private void playAudio(String audioFile) {
+	// TODO Auto-generated method stub
+	
+	}
+	
+	public void shutdown(){
+		//todo remove listeners
+	}
 	
 }

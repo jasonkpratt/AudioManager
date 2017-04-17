@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -33,7 +35,7 @@ public class MainFrame extends JFrame {
 	    // If Nimbus is not available, you can set the GUI to another look and feel.
 	}
 
-		setSize(300,300);
+		setMinimumSize(new Dimension(1200,700));
 		this.setLocationRelativeTo(null);
 		TopPanel topPanel=new TopPanel();
 		this.getContentPane().add(topPanel.buildUI(), BorderLayout.CENTER);

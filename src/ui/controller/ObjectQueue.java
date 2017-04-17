@@ -67,6 +67,7 @@ public abstract class ObjectQueue {
 	
 	abstract protected void processObject(Object object);
 	
+//********************************************************************************************************************
 	protected void queueObject(Object object){
 		if(object==null) return;
 		

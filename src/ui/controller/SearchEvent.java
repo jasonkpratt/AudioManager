@@ -2,7 +2,7 @@ package ui.controller;
 
 public class SearchEvent{
 	public enum Type{
-		search, create
+		search, create, listen
 	}
 	//two events related to search, searching for a media link
 	//and adding the media to the users library

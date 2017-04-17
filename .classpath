@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resource"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/commons-io-2.5.jar"/>
 	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/commons-lang3-3.5.jar"/>
@@ -10,5 +11,22 @@
 	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/modelmapper-0.7.7.jar"/>
 	<classpathentry kind="lib" path="C:/Users/jason/Documents/ffmpegJars/slf4j-api-1.7.21.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/download"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-core-4.4.6/lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-core-4.4.6/lib/httpcore-4.4.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-core-4.4.6/lib/httpcore-ab-4.4.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-core-4.4.6/lib/httpcore-nio-4.4.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/fluent-hc-4.5.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/httpclient-4.5.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/httpclient-cache-4.5.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/httpclient-win-4.5.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/httpcore-4.4.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/httpmime-4.5.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/jna-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/httpcomponents-client-4.5.3/lib/jna-platform-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/DJNativeSwing.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/JarFiles/DJNativeSwing-SWT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jason/Documents/eclipse/plugins/org.eclipse.swt.win32.win32.x86_64_3.102.1.v20130827-2048.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

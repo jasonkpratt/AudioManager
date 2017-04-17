@@ -63,6 +63,10 @@ public class AudioManager {
 	}
 	//*******************************************************************************************
 	
+	public void playAudio(){
+		String ffplayPath="C:\\Users\\jason\\Documents\\ffmpeg\\bin\\";
+	}
+	
 	public static void main(String [] args){
 		AudioManager mananger=new AudioManager();
 		mananger.createAudio("C:\\Users\\jason\\Music\\temp\\Green Grass and High Tides.audio.mp4");
