@@ -116,7 +116,7 @@ public class SearchView extends JPanel implements UI_Constants{
 			});
 			add(topPanel);
 			imageGallery=new JPanel();
-			imageGallery.setBackground(new Color(200,200,200,182));
+			imageGallery.setBackground(new Color(200,200,200,0));
 			JScrollPane scrollPane =new JScrollPane(imageGallery){
 
 				private static final long serialVersionUID = 1L;
