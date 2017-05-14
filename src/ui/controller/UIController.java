@@ -17,6 +17,7 @@ import ui.controller.SearchEvent.Type;
 import ui.model.YouTubeParser;
 import ui.view.CleanUpView;
 import ui.view.ConverterView;
+import ui.view.DownloadStateListener;
 import ui.view.ManualView;
 import ui.view.SearchView;
 import ui.view.TreeView;
@@ -34,6 +35,7 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 	Audio downloadManager=new Audio();
 	private boolean playMusic=false;
 	private List<String> songsCurrentlyDownloaded=new ArrayList<>();
+	private List<DownloadStateListener> downloadStateListeners=new ArrayList<>();
 	
 	public UIController(SearchView searchView, TreeView treeView, CleanUpView cleanUpView, ConverterView converterView, ManualView manualView){
 		this.manualView=manualView;
@@ -162,13 +164,27 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 		return files;
 	}
 //*******************************************************************************************************
+
+	public void addDownloadStateListeners(DownloadStateListener listener){
+		downloadStateListeners.add(listener);
+	}
+//*******************************************************************************************************
 	
 	@Override
-	public void updateDownloadListener(VideoFileInfo videoFile ) {
+	public void updateDownloadListener(VideoFileInfo videoFile, String id ) {
 		//todo update download progress bar
-		
+		if(!videoFile.getContentType().contains("video")){
+			for(DownloadStateListener listener:downloadStateListeners){
+				float downloadPercent= (videoFile.getCount() / (float) videoFile.getLength());
+				int percent=((int)(downloadPercent*100));
+				System.out.println(" \nState is : "+videoFile.getState()+" id: "+id+" with percent "+percent);
+				listener.downloadUpdate(id, percent);
+			}
+		}
 
 	}
+//*******************************************************************************************************
+	
 	private void playAudio(String audioFile) {
 	// TODO Auto-generated method stub
 	
@@ -176,6 +192,14 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 	
 	public void shutdown(){
 		//todo remove listeners
+	}
+
+	@Override
+	public void downLoadComplete(String id) {
+		for(DownloadStateListener listener:downloadStateListeners){
+			System.out.println(" download complete for id "+id);
+			listener.downloadComplete(id);
+		}	
 	}
 	
 }

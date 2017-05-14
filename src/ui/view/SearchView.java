@@ -14,8 +14,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -35,23 +37,27 @@ import ui.UI_Constants;
 import ui.controller.ViewListener;
 import ui.model.SearchResult;
 
-public class SearchView extends JPanel implements UI_Constants{	
+public class SearchView extends JPanel implements UI_Constants, DownloadStateListener{	
 		
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 		private ViewListener viewListener;
-		GridBagConstraints c = new GridBagConstraints();
+		GridBagConstraints gridbagConstraints = new GridBagConstraints();
 		JFrame previewFrame=null;
-		private JPanel imageGallery=null;;
+		private JPanel imageGalleryPanel=null;;
 		private JPanel nowPlaying=null;
 		private SearchResult previousPlayedIcon=null;
+		boolean hooverPlayButton=false;
+		private HashMap <String, SearchResult> downloadMap=new HashMap<String, SearchResult>();
+		int borderThickness=3;
+		char [] downloadPercent=new char[2];
 
 
 		public JPanel buildUI(){
 			this.setBorder(BorderFactory.createEtchedBorder());
-			this.setBackground(new Color(0,0,0,0));
+		//	this.setBackground(new Color(0,0,0,0));
 			if(previewFrame==null)
 				previewFrame=createPreviewFrame();
 			int column=0;
@@ -62,18 +68,18 @@ public class SearchView extends JPanel implements UI_Constants{
 			topPanel.setLayout(new GridBagLayout());
 			
 			//1st row
-			c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = column;
-			c.gridy = row;
+			gridbagConstraints.fill = GridBagConstraints.HORIZONTAL;
+			gridbagConstraints.gridx = column;
+			gridbagConstraints.gridy = row;
 			JLabel searchFieldLabel =new JLabel("Media Search");
-			topPanel.add(searchFieldLabel,c);
+			topPanel.add(searchFieldLabel,gridbagConstraints);
 			
-			c.fill = GridBagConstraints.HORIZONTAL;
+			gridbagConstraints.fill = GridBagConstraints.HORIZONTAL;
 			column++;
-			c.gridx = column;
-			c.gridy = row;
+			gridbagConstraints.gridx = column;
+			gridbagConstraints.gridy = row;
 			JTextField searchField= new JTextField(20);
-			topPanel.add(searchField,c);
+			topPanel.add(searchField,gridbagConstraints);
 			searchField.addKeyListener(new KeyListener() {
 				
 				@Override
@@ -97,28 +103,25 @@ public class SearchView extends JPanel implements UI_Constants{
 					
 				}
 			});
-			
-			
-
 			column++;
 			//row++;
-			c.gridx = column;
+			gridbagConstraints.gridx = column;
 			//c.gridy = row;
 
-			topPanel.add(searchButton,c);
+			topPanel.add(searchButton,gridbagConstraints);
 			searchButton.addActionListener(new ActionListener(){
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					imageGallery.removeAll();
+					imageGalleryPanel.removeAll();
 					viewListener.update(SEARCH_MEDIA, searchField.getText());
 				}				
 			});
 			add(topPanel);
-			imageGallery=new JPanel();
-			imageGallery.setBackground(new Color(200,200,200,0));
-			JScrollPane scrollPane =new JScrollPane(imageGallery){
-
+			imageGalleryPanel=new JPanel();
+			//imageGallery.setBackground(new Color(200,200,200,0));
+			JScrollPane scrollPane =new JScrollPane(imageGalleryPanel){
+ 
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -142,10 +145,9 @@ public class SearchView extends JPanel implements UI_Constants{
 	public void updateImageScrollBar(List<SearchResult> list){
 		//System.out.println("Updating panel");
 
-		
 		int column=0;
 		int row=0;
-		imageGallery.setLayout(new GridBagLayout());
+		imageGalleryPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.fill = GridBagConstraints.HORIZONTAL;
 		c1.insets = new Insets(20,30,0,0);
@@ -170,12 +172,54 @@ public class SearchView extends JPanel implements UI_Constants{
 	//		} 
 	//    g.drawImage(image, 95,5, 35, 35, null);
 	    g.setColor(Color.LIGHT_GRAY);
-	    g.drawString(icon.getLength(), 4, 90);
+	    g.drawString(icon.getAudioLength(), 4, 90);
 	    g.dispose();
 			JLabel iconLabel=new JLabel(icon.getImageIcon());
-			int borderThickness=3;
 			iconLabel.setBorder(BorderFactory.createEmptyBorder(borderThickness, borderThickness, borderThickness, borderThickness));
-	    iconLabel.addMouseListener(new MouseListener() {
+	    
+			iconLabel.addMouseMotionListener(new MouseMotionListener() {
+
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					if(previousPlayedIcon!=icon){
+						if(isMousePositionPlayButton(e)){
+							Graphics g;
+							g = icon.getImageIcon().getImage().getGraphics();
+							drawPlayButton(g, Color.gray);
+							repaint();
+							revalidate();
+							g.dispose();
+							hooverPlayButton=true;
+						}
+						else{
+							if(hooverPlayButton){
+								Graphics g;
+								g = icon.getImageIcon().getImage().getGraphics();
+								drawPlayButton(g, Color.white);
+								repaint();
+								revalidate();
+								g.dispose();
+								hooverPlayButton=true;
+							}
+						}	
+					}
+					
+				}
+				private boolean isMousePositionPlayButton(MouseEvent e) {
+					if(e.getX()>79&&e.getY()<26)
+						return true;
+					return false;
+				}
+				
+				
+				@Override
+				public void mouseDragged(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			
+			iconLabel.addMouseListener(new MouseListener() {
 				
 	    	boolean downloading=false;
 	    	
@@ -186,27 +230,36 @@ public class SearchView extends JPanel implements UI_Constants{
 				}
 				
 				@Override
-				public void mousePressed(MouseEvent e) {
-
-					
-					
+				public void mousePressed(MouseEvent e) {					
 				}
 				
 				@Override
 				public void mouseExited(MouseEvent e) {
 			
 					iconLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					iconLabel.setBorder(BorderFactory.createEmptyBorder(borderThickness, borderThickness, borderThickness, borderThickness));
+					if(iconLabel.getName()!="downloading"){
+						iconLabel.setBorder(BorderFactory.createEmptyBorder(borderThickness, borderThickness, borderThickness, borderThickness));
+					}
+					
+					if(hooverPlayButton&&previousPlayedIcon!=icon){
+						Graphics g;
+						g = icon.getImageIcon().getImage().getGraphics();
+						drawPlayButton(g, Color.white);
+						repaint();
+						revalidate();
+						g.dispose();
+						hooverPlayButton=false;
+					}
+
 				}
 				
 				@Override
 				public void mouseEntered(MouseEvent e) {
-
-						iconLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-						iconLabel.setToolTipText("download");
-						iconLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE,borderThickness ));
-					
-					
+						if(iconLabel.getName()!="downloading"){
+							iconLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+							iconLabel.setToolTipText("download");
+							iconLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN,borderThickness ));
+						}		
 				}
 				
 				@Override
@@ -231,20 +284,20 @@ public class SearchView extends JPanel implements UI_Constants{
 							previewFrame.setVisible(true);
 						nowPlaying=getBrowserPanel(icon.getVideoId());
 						previewFrame.getContentPane().add(nowPlaying, BorderLayout.CENTER);
-						
-						
+			
 					}
 
-					else if(!downloading){
-						downloading=true;
+					else if(iconLabel.getName()!="downloading"){
+						iconLabel.setName("downloading");
+						iconLabel.setBorder(BorderFactory.createLineBorder(Color.ORANGE,borderThickness ));
+						//downloading=true;
 						String path="https://www.youtube.com/watch?v="+icon.getVideoId();
 						System.out.println("path is "+path);
 						viewListener.update(CREATE_SONG, path);
-						downloading=false;
+						downloadMap.put(path, icon);
+						icon.setJlabel(iconLabel);
 					}
-
 				}
-
 				private boolean isMousePositionPlayButton(MouseEvent e) {
 					if(e.getX()>79&&e.getY()<26)
 						return true;
@@ -260,13 +313,12 @@ public class SearchView extends JPanel implements UI_Constants{
 			//titleLabel.setText(icon.getTitle());
 			iconPanel.add(iconLabel);
 			iconPanel.add(titleLabel);
-			imageGallery.add(iconPanel,c1);
+			imageGalleryPanel.add(iconPanel,c1);
 			column++;
 			if(column>4){
 				row++;
 				column=0;
 			}
-
 		}
 
 		repaint();
@@ -360,6 +412,27 @@ public class SearchView extends JPanel implements UI_Constants{
     webBrowser.setBarsVisible(false);
     webBrowser.navigate("https://www.youtube.com/watch?v="+videoId);
     return webBrowserPanel;
+	}
+
+
+	@Override
+	public void downloadComplete(String id) {
+		downloadMap.get(id).getLabel().setBorder(BorderFactory.createEmptyBorder(borderThickness, borderThickness, borderThickness, borderThickness));
+		downloadMap.get(id).getLabel().setName("");
+	}
+
+	@Override
+	public void downloadUpdate(String id, int percentDownload) {
+		Graphics g=downloadMap.get(id).getImageIcon().getImage().getGraphics();
+		System.out.println("Updating download graphics "+percentDownload+" graphics is null: "+(g==null));
+		String downloadPercent=String.valueOf(percentDownload);
+		g.setColor(Color.LIGHT_GRAY);
+		g.drawString(downloadPercent, 80, 90);
+		repaint();
+		revalidate();
+    g.dispose();
+
+		
 	}
 	
 }

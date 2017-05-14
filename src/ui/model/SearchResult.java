@@ -1,6 +1,7 @@
 package ui.model;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 import ui.UI_Constants;
 
@@ -12,6 +13,7 @@ public class SearchResult implements UI_Constants {
 	String parsedTitle;
 	PlaylistType listType=PlaylistType.singleSong;
 	ImageIcon imageIcon=null;
+	JLabel label;
 	
 	
 	public void setVideoId(String videolink){
@@ -36,7 +38,7 @@ public class SearchResult implements UI_Constants {
 		return listType;
 	}
 	
-	public String getLength(){
+	public String getAudioLength(){
 		return length;
 	}
 	
@@ -78,6 +80,14 @@ public class SearchResult implements UI_Constants {
 	
 	public String getParsedTitle(){
 		return parsedTitle;
+	}
+	
+	public void  setJlabel(JLabel label){
+		this.label=label;
+	}
+	
+	public JLabel getLabel(){
+		return label;
 	}
 	
 }

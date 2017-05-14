@@ -22,21 +22,21 @@ public class TopPanel extends JPanel {
 	public JPanel buildUI(){
 		//this.setBackground(Color.black);
 		img = null;
-		try {
-		    img = ImageIO.read(new File("resource/stock.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	//	try {
+		  //  img = ImageIO.read(new File("resource/stock.jpg"));
+		//} catch (IOException e) {
+	////		e.printStackTrace();
+	//	}
 		TabbedPanel tabbedPanel=new TabbedPanel();
 		add(tabbedPanel.buildUI());
 		return this;
 	}
 	
-	@Override
-  protected void paintComponent(Graphics g) {
+////	@Override
+ // protected void paintComponent(Graphics g) {
 
-    super.paintComponent(g);
-        g.drawImage(img, 0, 0, null);
-}
+ //   super.paintComponent(g);
+      //  g.drawImage(img, 0, 0, null);
+//}
 	//*********************************************************************
 }

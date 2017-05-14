@@ -14,6 +14,7 @@ public class TabbedPanel extends JTabbedPane {
 		ManualView manualView=new ManualView();
 		
 		UIController controller=new UIController(searchView,treeView,cleanUpView,converterView,manualView);
+		controller.addDownloadStateListeners(searchView);
 		searchView.setListner(controller);
 		manualView.setListner(controller);
 	
