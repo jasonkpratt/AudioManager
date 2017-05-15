@@ -25,9 +25,9 @@ import javax.swing.ImageIcon;
 public class YouTubeParser implements UI_Constants {
 
 	private final String USER_AGENT = "Mozilla/5.0";
-	private List<SearchResult> imageList=new ArrayList<SearchResult>();
+	private List<SearchResultData> imageList=new ArrayList<SearchResultData>();
 
-	public List<SearchResult> startParser(String searchString) throws Exception {
+	public List<SearchResultData> startParser(String searchString) throws Exception {
 		imageList.clear();
 		String parsed=searchString.replace(" ", "+");
 		String url = "https://www.youtube.com/results?search_query="+parsed;
@@ -68,7 +68,8 @@ public class YouTubeParser implements UI_Constants {
 	    	//remove extra characters in title
 	    	String fullTitle=(m.group(2)).replaceAll("&#39;", "");
 	    	String fullTitle2=fullTitle.replaceAll("&quot;", "");
-	    	String parsedTitle=parseTitle(fullTitle2);
+	    	String fullTitle3=fullTitle2.replaceAll("&amp;", "");
+	    	String parsedTitle=parseTitle(fullTitle3);
 	    
 	    	
 	    	//video length could be the length or could return a playlist url
@@ -76,10 +77,10 @@ public class YouTubeParser implements UI_Constants {
 	    	//System.out.println("video length is "+videoLength);
 	    	URL imgURL = new URL("http://img.youtube.com/vi/"+videoId+"/mqdefault.jpg");
 	    	ImageIcon image = createImageIcon(imgURL);
-	    	SearchResult searchResult=new SearchResult();
+	    	SearchResultData searchResult=new SearchResultData();
+	    	searchResult.setData(videoLength);
 	    	searchResult.setImageIcon(image);
 	    	searchResult.setVideoId(videoId);
-	    	searchResult.setData(videoLength);
 	    	//searchResult.setLength(videoLength);
 	    	searchResult.setfullTitle(fullTitle2);
 	    	searchResult.setParsedTitle(parsedTitle);

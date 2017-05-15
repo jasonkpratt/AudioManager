@@ -35,9 +35,10 @@ import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
 import ui.UI_Constants;
 import ui.controller.ViewListener;
-import ui.model.SearchResult;
+import ui.model.SearchResultData;
+import ui.view.IconLabel.LabelEvent;
 
-public class SearchView extends JPanel implements UI_Constants, DownloadStateListener{	
+public class SearchView extends JPanel implements UI_Constants, DownloadStateListener, IconLabelListener{	
 		
 		/**
 		 * 
@@ -47,11 +48,11 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 		GridBagConstraints gridbagConstraints = new GridBagConstraints();
 		JFrame previewFrame=null;
 		private JPanel imageGalleryPanel=null;;
-		private JPanel nowPlaying=null;
-		private SearchResult previousPlayedIcon=null;
-		boolean hooverPlayButton=false;
-		private HashMap <String, SearchResult> downloadMap=new HashMap<String, SearchResult>();
-		int borderThickness=3;
+		private JPanel youTubePanel=null;
+		private SearchResultData previousPlayedIcon=null;
+		//boolean hooverPlayButton=false;
+		private HashMap <String, SearchResultData> downloadMap=new HashMap<String, SearchResultData>();
+		//int borderThickness=3;
 		char [] downloadPercent=new char[2];
 
 
@@ -142,7 +143,7 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 	}
 //***********************************************************************************************
 	
-	public void updateImageScrollBar(List<SearchResult> list){
+	public void updateImageScrollBar(List<SearchResultData> list){
 		//System.out.println("Updating panel");
 
 		int column=0;
@@ -151,167 +152,22 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.fill = GridBagConstraints.HORIZONTAL;
 		c1.insets = new Insets(20,30,0,0);
-		for(SearchResult icon:list){
+		for(SearchResultData icon:downloadMap.values()){
+			list.add(0,icon);
+		}
+		for(SearchResultData icon:list){
 			c1.gridx = column;
 			c1.gridy = row;
-			JPanel iconPanel=new JPanel();
-			iconPanel.setLayout(new BoxLayout(iconPanel, BoxLayout.Y_AXIS));	
-	    Graphics g = icon.getImageIcon().getImage().getGraphics();
-	    g.setFont(g.getFont().deriveFont(10f));
-	    g.setColor(Color.BLACK); 
-	    g.fillRect(0, 80, 35,15 );
-	    g.fillRoundRect(80, 0, 45,30, 10, 10);
-	    drawPlayButton(g,Color.white);
-	    //URL play=this.getClass().getClassLoader().getResource("playButton.jpg");
-	    //Image image = null;
-		//	try {
-		//		image = ImageIO.read(play);
-		//	} catch (IOException e) {
-				// TODO Auto-generated catch block
-	////			e.printStackTrace();
-	//		} 
-	//    g.drawImage(image, 95,5, 35, 35, null);
-	    g.setColor(Color.LIGHT_GRAY);
-	    g.drawString(icon.getAudioLength(), 4, 90);
-	    g.dispose();
-			JLabel iconLabel=new JLabel(icon.getImageIcon());
-			iconLabel.setBorder(BorderFactory.createEmptyBorder(borderThickness, borderThickness, borderThickness, borderThickness));
-	    
-			iconLabel.addMouseMotionListener(new MouseMotionListener() {
-
-				@Override
-				public void mouseMoved(MouseEvent e) {
-					if(previousPlayedIcon!=icon){
-						if(isMousePositionPlayButton(e)){
-							Graphics g;
-							g = icon.getImageIcon().getImage().getGraphics();
-							drawPlayButton(g, Color.gray);
-							repaint();
-							revalidate();
-							g.dispose();
-							hooverPlayButton=true;
-						}
-						else{
-							if(hooverPlayButton){
-								Graphics g;
-								g = icon.getImageIcon().getImage().getGraphics();
-								drawPlayButton(g, Color.white);
-								repaint();
-								revalidate();
-								g.dispose();
-								hooverPlayButton=true;
-							}
-						}	
-					}
-					
-				}
-				private boolean isMousePositionPlayButton(MouseEvent e) {
-					if(e.getX()>79&&e.getY()<26)
-						return true;
-					return false;
-				}
-				
-				
-				@Override
-				public void mouseDragged(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-			
-			iconLabel.addMouseListener(new MouseListener() {
-				
-	    	boolean downloading=false;
-	    	
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void mousePressed(MouseEvent e) {					
-				}
-				
-				@Override
-				public void mouseExited(MouseEvent e) {
-			
-					iconLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					if(iconLabel.getName()!="downloading"){
-						iconLabel.setBorder(BorderFactory.createEmptyBorder(borderThickness, borderThickness, borderThickness, borderThickness));
-					}
-					
-					if(hooverPlayButton&&previousPlayedIcon!=icon){
-						Graphics g;
-						g = icon.getImageIcon().getImage().getGraphics();
-						drawPlayButton(g, Color.white);
-						repaint();
-						revalidate();
-						g.dispose();
-						hooverPlayButton=false;
-					}
-
-				}
-				
-				@Override
-				public void mouseEntered(MouseEvent e) {
-						if(iconLabel.getName()!="downloading"){
-							iconLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-							iconLabel.setToolTipText("download");
-							iconLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN,borderThickness ));
-						}		
-				}
-				
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if(isMousePositionPlayButton(e)){
-						Graphics g;
-						if(previousPlayedIcon!=null){
-							g = previousPlayedIcon.getImageIcon().getImage().getGraphics();
-							drawPlayButton(g, Color.white);
-							g.dispose();
-						}
-
-						previousPlayedIcon=icon;
-						g = icon.getImageIcon().getImage().getGraphics();
-						drawPlayButton(g, Color.green);
-						repaint();
-						revalidate();
-						g.dispose();
-						if(nowPlaying!=null)
-							previewFrame.remove(nowPlaying);
-						if(!previewFrame.isShowing())
-							previewFrame.setVisible(true);
-						nowPlaying=getBrowserPanel(icon.getVideoId());
-						previewFrame.getContentPane().add(nowPlaying, BorderLayout.CENTER);
-			
-					}
-
-					else if(iconLabel.getName()!="downloading"){
-						iconLabel.setName("downloading");
-						iconLabel.setBorder(BorderFactory.createLineBorder(Color.ORANGE,borderThickness ));
-						//downloading=true;
-						String path="https://www.youtube.com/watch?v="+icon.getVideoId();
-						System.out.println("path is "+path);
-						viewListener.update(CREATE_SONG, path);
-						downloadMap.put(path, icon);
-						icon.setJlabel(iconLabel);
-					}
-				}
-				private boolean isMousePositionPlayButton(MouseEvent e) {
-					if(e.getX()>79&&e.getY()<26)
-						return true;
-					return false;
-				}
-			});
-
+			IconPanel iconPanel=new IconPanel(icon);
+			iconPanel.addLabel();
+			icon.getLabel().setLabelListener(this);
 			int length=icon.getParsedTitle().length();
 			if(length>23)
 				length=23;
 			JLabel titleLabel=new JLabel(icon.getParsedTitle().substring(0, length));
 			titleLabel.setToolTipText(icon.getFullTitle());
 			//titleLabel.setText(icon.getTitle());
-			iconPanel.add(iconLabel);
+			//iconPanel.add(iconLabel);
 			iconPanel.add(titleLabel);
 			imageGalleryPanel.add(iconPanel,c1);
 			column++;
@@ -323,15 +179,6 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 
 		repaint();
 		revalidate();
-	}
-	
-//***********************************************************************************************
-	private void drawPlayButton(Graphics g, Color color){
-    g.setColor(color);
-    int[] xPoints={98,98,112};
-    int[] yPoints={10,20,15};
-    g.fillPolygon(xPoints, yPoints, 3);
-    
 	}
 	
 //***********************************************************************************************
@@ -370,8 +217,8 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 							@Override
 							public void windowClosing(WindowEvent e) {
 
-								if(nowPlaying!=null)
-									previewFrame.remove(nowPlaying);
+								if(youTubePanel!=null)
+									previewFrame.remove(youTubePanel);
 								
 							}
 							
@@ -413,26 +260,41 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
     webBrowser.navigate("https://www.youtube.com/watch?v="+videoId);
     return webBrowserPanel;
 	}
+//***********************************************************************************************
 
-
+	//todo these methods below should be in a state manager class
 	@Override
 	public void downloadComplete(String id) {
-		downloadMap.get(id).getLabel().setBorder(BorderFactory.createEmptyBorder(borderThickness, borderThickness, borderThickness, borderThickness));
-		downloadMap.get(id).getLabel().setName("");
+		downloadMap.get(id).getLabel().setLabelState(LabelEvent.DOWNLOAD);
+		downloadMap.remove(id);
 	}
 
 	@Override
 	public void downloadUpdate(String id, int percentDownload) {
-		Graphics g=downloadMap.get(id).getImageIcon().getImage().getGraphics();
-		System.out.println("Updating download graphics "+percentDownload+" graphics is null: "+(g==null));
-		String downloadPercent=String.valueOf(percentDownload);
-		g.setColor(Color.LIGHT_GRAY);
-		g.drawString(downloadPercent, 80, 90);
-		repaint();
-		revalidate();
-    g.dispose();
-
-		
+		downloadMap.get(id).getLabel().updateDownload(percentDownload);
+	}
+	
+	@Override
+	public void updateIconLabelState(LabelEvent type, SearchResultData icon) {
+		if(type==LabelEvent.PLAY){
+			if(previousPlayedIcon!=null)
+				previousPlayedIcon.getLabel().setLabelState(LabelEvent.PLAY);
+			previousPlayedIcon=icon;
+			//checks to see if another video was playing, if true remove it
+			if(youTubePanel!=null)
+				previewFrame.remove(youTubePanel);
+			if(!previewFrame.isShowing())
+				previewFrame.setVisible(true);
+			youTubePanel=getBrowserPanel(icon.getVideoId());
+			previewFrame.getContentPane().add(youTubePanel, BorderLayout.CENTER);
+		}
+		if(type==LabelEvent.DOWNLOAD){
+			String path="https://www.youtube.com/watch?v="+icon.getVideoId();
+			System.out.println("path is "+path);
+			viewListener.update(CREATE_SONG, path);
+			downloadMap.put(path, icon);	
+		}
+	
 	}
 	
 }

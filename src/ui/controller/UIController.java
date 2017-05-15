@@ -14,6 +14,7 @@ import executable.DownloadListener;
 import ffmpeg.AudioManager;
 import ui.UI_Constants;
 import ui.controller.SearchEvent.Type;
+import ui.model.SoundEffect;
 import ui.model.YouTubeParser;
 import ui.view.CleanUpView;
 import ui.view.ConverterView;
@@ -86,26 +87,9 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
  			songsCurrentlyDownloaded.add(event.getEventString());
 			 Thread thread = new Thread(new Runnable() {
          public void run() {
-
-    			List<String> files=downloadSong(event);
-    			String audioFile = null;
-    			
-    			//select audio file to convert
-    			//todo allow video to convert if needed
-    			if(files.size()==1) audioFile=files.get(0);
-    			else 
-    				for(String fileName:files){	
-    					if(fileName.contains(".audio")) audioFile=fileName;
-    			}
-
-    			//audio manager converts from mp4 to mp3
-    			audioMAnager.createAudio(audioFile);
-    			
-    			//delete mp4 from directory
-    			deleteFromDirectory(audioFile);
-    			songsCurrentlyDownloaded.remove(event.getEventString());
-            }
-         });
+    			downloadSong(event);
+         }
+       });
 			thread.start();
 			break;
 			
@@ -153,15 +137,12 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 	}
 	//*******************************************************************************************
 	
-	private List<String> downloadSong(SearchEvent event) {
+	private void downloadSong(SearchEvent event) {
 		String [] inputArguments=new String [3];
 		inputArguments[0]=event.getEventString();
 		inputArguments[1]=TEMP_DOWNLOAD_PATH;
 		inputArguments[2]=String.valueOf(videoState);
 		downloadManager.main(inputArguments);
-		List<String> files=downloadManager.getFileNames();
-		System.out.println("Files size is "+files.size());
-		return files;
 	}
 //*******************************************************************************************************
 
@@ -181,7 +162,6 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 				listener.downloadUpdate(id, percent);
 			}
 		}
-
 	}
 //*******************************************************************************************************
 	
@@ -199,6 +179,25 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 		for(DownloadStateListener listener:downloadStateListeners){
 			System.out.println(" download complete for id "+id);
 			listener.downloadComplete(id);
+			List<String> files=downloadManager.getFileNames();
+			System.out.println("Files size is "+files.size());
+			String audioFile = null;
+			
+			//select audio file to convert
+			//todo allow video to convert if needed
+			if(files.size()==1) audioFile=files.get(0);
+			else 
+				for(String fileName:files){	
+					if(fileName.contains(".audio")) audioFile=fileName;
+			}
+
+			//audio manager converts from mp4 to mp3
+			audioMAnager.createAudio(audioFile);
+			
+			//delete mp4 from directory
+			deleteFromDirectory(audioFile);
+			songsCurrentlyDownloaded.remove(id);
+			SoundEffect.DownloadComplete.play();
 		}	
 	}
 	

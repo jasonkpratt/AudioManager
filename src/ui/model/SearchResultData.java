@@ -1,11 +1,15 @@
 package ui.model;
 
+import java.awt.Color;
+import java.awt.Graphics;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import ui.UI_Constants;
+import ui.view.IconLabel;
 
-public class SearchResult implements UI_Constants {
+public class SearchResultData implements UI_Constants {
 	String videoId;
 	String length;
 	String playlistUrl;
@@ -13,7 +17,8 @@ public class SearchResult implements UI_Constants {
 	String parsedTitle;
 	PlaylistType listType=PlaylistType.singleSong;
 	ImageIcon imageIcon=null;
-	JLabel label;
+	IconLabel label=null;
+	Graphics g;
 	
 	
 	public void setVideoId(String videolink){
@@ -60,6 +65,15 @@ public class SearchResult implements UI_Constants {
 	
 	public void setImageIcon(ImageIcon image){
 		imageIcon=image;
+   //draw time stamp and playButton with black rectangles as background
+		g = imageIcon.getImage().getGraphics();
+    g.setFont(g.getFont().deriveFont(10f));
+    g.setColor(Color.BLACK); 
+    g.fillRect(0, 80, 35,15 );
+    g.fillRoundRect(80, 0, 45,30, 10, 10);
+    drawPlayButton(Color.white);
+    g.setColor(Color.LIGHT_GRAY);
+    g.drawString(length, 4, 90);
 	}
 	
 	public ImageIcon getImageIcon(){
@@ -82,12 +96,20 @@ public class SearchResult implements UI_Constants {
 		return parsedTitle;
 	}
 	
-	public void  setJlabel(JLabel label){
+	public void  setLabel(IconLabel label){
 		this.label=label;
 	}
 	
-	public JLabel getLabel(){
+	public IconLabel getLabel(){
 		return label;
+	}
+	
+//***********************************************************************************************
+	public void drawPlayButton(Color color){
+    g.setColor(color);
+    int[] xPoints={98,98,112};
+    int[] yPoints={10,20,15};
+    g.fillPolygon(xPoints, yPoints, 3);  
 	}
 	
 }
