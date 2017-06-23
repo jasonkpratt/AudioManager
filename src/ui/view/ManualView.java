@@ -34,7 +34,7 @@ public class ManualView extends JPanel implements UI_Constants{
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = column;
 		c.gridy = row;
-		JLabel linkFieldLabel =new JLabel("HTTP link");
+		JLabel linkFieldLabel =new JLabel("YouTube HTTP link");
 		add(linkFieldLabel,c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;

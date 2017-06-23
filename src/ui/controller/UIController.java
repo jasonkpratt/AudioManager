@@ -179,6 +179,7 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 		for(DownloadStateListener listener:downloadStateListeners){
 			System.out.println(" download complete for id "+id);
 			listener.downloadComplete(id);
+			SoundEffect.DownloadComplete.play();
 			List<String> files=downloadManager.getFileNames();
 			System.out.println("Files size is "+files.size());
 			String audioFile = null;
@@ -196,8 +197,7 @@ public class UIController extends ObjectQueue implements ViewListener, UI_Consta
 			
 			//delete mp4 from directory
 			deleteFromDirectory(audioFile);
-			songsCurrentlyDownloaded.remove(id);
-			SoundEffect.DownloadComplete.play();
+			songsCurrentlyDownloaded.remove(id);	
 		}	
 	}
 	

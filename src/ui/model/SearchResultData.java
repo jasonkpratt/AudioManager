@@ -2,6 +2,11 @@ package ui.model;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -63,6 +68,11 @@ public class SearchResultData implements UI_Constants {
 		listType=PlaylistType.album;
 	}
 	
+	public void setImageIconPath(URL imgURL){
+		ImageIcon image = createImageIcon(imgURL);
+		setImageIcon(image);
+	}
+	
 	public void setImageIcon(ImageIcon image){
 		imageIcon=image;
    //draw time stamp and playButton with black rectangles as background
@@ -111,5 +121,38 @@ public class SearchResultData implements UI_Constants {
     int[] yPoints={10,20,15};
     g.fillPolygon(xPoints, yPoints, 3);  
 	}
+	
+//********************************************************************************************************** 	
+	
+	/**
+	 * Creates an ImageIcon if the path is valid.
+	 * @param String - resource path
+	 * @param String - description of the file
+	 */
+	protected ImageIcon createImageIcon(URL imgURL) {
+
+		try{
+			ImageIcon icon=new ImageIcon(imgURL);
+			return new ImageIcon(getScaledImage(icon.getImage(), 128,96));
+			//return icon;
+		}
+		catch(Exception ex){		
+			//System.out.println("YOU tube image is null");
+			return null;
+			
+		}
+
+	}
+//********************************************************************************************************** 
+		
+		private Image getScaledImage(Image srcImg, int w, int h){
+      BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+      Graphics2D g2 = resizedImg.createGraphics();
+      g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+      g2.drawImage(srcImg, 0, 0, w, h, null);
+      g2.dispose();
+      return resizedImg;
+  }
+//********************************************************************************************************** 	
 	
 }

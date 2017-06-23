@@ -76,10 +76,10 @@ public class YouTubeParser implements UI_Constants {
 	    	String videoLength=m.group(3);
 	    	//System.out.println("video length is "+videoLength);
 	    	URL imgURL = new URL("http://img.youtube.com/vi/"+videoId+"/mqdefault.jpg");
-	    	ImageIcon image = createImageIcon(imgURL);
+	    	
 	    	SearchResultData searchResult=new SearchResultData();
 	    	searchResult.setData(videoLength);
-	    	searchResult.setImageIcon(image);
+	    	searchResult.setImageIconPath(imgURL);
 	    	searchResult.setVideoId(videoId);
 	    	//searchResult.setLength(videoLength);
 	    	searchResult.setfullTitle(fullTitle2);
@@ -105,37 +105,6 @@ public class YouTubeParser implements UI_Constants {
 		String parsedTitle=title.replaceAll("\\(.*\\)","");
 		return parsedTitle;
 	}
-//********************************************************************************************************** 	
 	
-	/**
-	 * Creates an ImageIcon if the path is valid.
-	 * @param String - resource path
-	 * @param String - description of the file
-	 */
-	protected ImageIcon createImageIcon(URL imgURL) {
-
-		try{
-			ImageIcon icon=new ImageIcon(imgURL);
-			return new ImageIcon(getScaledImage(icon.getImage(), 128,96));
-			//return icon;
-		}
-		catch(Exception ex){		
-			//System.out.println("YOU tube image is null");
-			return null;
-			
-		}
-
-	}
-//********************************************************************************************************** 
-		
-		private Image getScaledImage(Image srcImg, int w, int h){
-      BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-      Graphics2D g2 = resizedImg.createGraphics();
-      g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-      g2.drawImage(srcImg, 0, 0, w, h, null);
-      g2.dispose();
-      return resizedImg;
-  }
-//********************************************************************************************************** 		
 		
 }

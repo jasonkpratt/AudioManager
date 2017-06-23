@@ -64,7 +64,7 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 			int column=0;
 			int row=0;
 			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-			JButton searchButton= new JButton("Search ");
+			JButton searchButton= new JButton("Get it!");
 			JPanel topPanel=new JPanel();
 			topPanel.setLayout(new GridBagLayout());
 			
@@ -72,7 +72,7 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 			gridbagConstraints.fill = GridBagConstraints.HORIZONTAL;
 			gridbagConstraints.gridx = column;
 			gridbagConstraints.gridy = row;
-			JLabel searchFieldLabel =new JLabel("Media Search");
+			JLabel searchFieldLabel =new JLabel("Media Search: ");
 			topPanel.add(searchFieldLabel,gridbagConstraints);
 			
 			gridbagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -80,6 +80,7 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 			gridbagConstraints.gridx = column;
 			gridbagConstraints.gridy = row;
 			JTextField searchField= new JTextField(20);
+			searchField.setToolTipText("Search for artists,bands, videos...");
 			topPanel.add(searchField,gridbagConstraints);
 			searchField.addKeyListener(new KeyListener() {
 				
@@ -152,6 +153,8 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.fill = GridBagConstraints.HORIZONTAL;
 		c1.insets = new Insets(20,30,0,0);
+		
+		//if a download is occurring, add icon to image gallery
 		for(SearchResultData icon:downloadMap.values()){
 			list.add(0,icon);
 		}
@@ -285,8 +288,11 @@ public class SearchView extends JPanel implements UI_Constants, DownloadStateLis
 				previewFrame.remove(youTubePanel);
 			if(!previewFrame.isShowing())
 				previewFrame.setVisible(true);
+
 			youTubePanel=getBrowserPanel(icon.getVideoId());
+
 			previewFrame.getContentPane().add(youTubePanel, BorderLayout.CENTER);
+
 		}
 		if(type==LabelEvent.DOWNLOAD){
 			String path="https://www.youtube.com/watch?v="+icon.getVideoId();

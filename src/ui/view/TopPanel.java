@@ -27,7 +27,7 @@ public class TopPanel extends JPanel {
 		//} catch (IOException e) {
 	////		e.printStackTrace();
 	//	}
-		TabbedPanel tabbedPanel=new TabbedPanel();
+		TabbedPanel tabbedPanel=TabbedPanel.getInstance();
 		add(tabbedPanel.buildUI());
 		return this;
 	}
